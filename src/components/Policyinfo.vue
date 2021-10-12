@@ -108,10 +108,90 @@
                             Basic Policy
 
                             <div class="d-flex justify-end">
-                             Add Rider
-                              <v-dialog>
-                                <v-card-action></v-card-action
-                              ></v-dialog>
+                              <template>
+                                <v-dialog
+                                  v-model="dialog"
+                                  persistent
+                                  max-width="100%"
+                                  max-height="100%"
+                                >
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                      small
+                                      color="primary"
+                                      dark
+                                      v-bind="attrs"
+                                      v-on="on"
+                                    >
+                                      Add Rider
+                                    </v-btn>
+                                  </template>
+                                  <v-card>
+                                    <v-card-title>
+                                      <span class="font-weight-black"
+                                        >Attachable Rider (Enhanced IncomeShield
+                                        Preferred)</span
+                                      >
+                                    </v-card-title>
+                                    <hr color="grey" />
+                                    <v-card-text>
+                                      <v-container>
+                                        <v-row>
+                                          <v-col cols="12" sm="6">
+                                            <v-autocomplete
+                                              :items="[
+                                                'Skiing',
+                                                'Ice hockey',
+                                                'Soccer',
+                                                'Basketball',
+                                                'Hockey',
+                                                'Reading',
+                                                'Writing',
+                                                'Coding',
+                                                'Basejump',
+                                              ]"
+                                              label="Life Insured"
+                                              outlined
+                                            ></v-autocomplete>
+                                          </v-col>
+                                          <v-col cols="12" sm="6">
+                                            <v-text-field
+                                              label="Search"
+                                              outlined
+                                            ></v-text-field>
+                                          </v-col>
+                                        </v-row>
+                                      </v-container>
+                                      <v-container>
+                                        <template>
+                                          <v-data-table
+                                            :headers="headers"
+                                            :items="desserts"
+                                            :items-per-page="5"
+                                            class="elevation-1"
+                                          ></v-data-table>
+                                        </template>
+                                      </v-container>
+                                    </v-card-text>
+                                    <hr color="grey" />
+                                    <v-card-actions>
+                                      <v-spacer></v-spacer>
+                                      <v-btn
+                                        color="primary"
+                                        @click="dialog = false"
+                                      >
+                                        Cancel
+                                      </v-btn>
+                                      <v-btn
+                                        color="warning"
+                                        @click="dialog = false"
+                                      >
+                                        Add Rider
+                                      </v-btn>
+                                    </v-card-actions>
+                                  </v-card>
+                                </v-dialog>
+                              </template>
                             </div>
                           </v-expansion-panel-header>
 
@@ -880,6 +960,7 @@ export default {
   },
   data() {
     return {
+      dialog: false,
       e1: 1,
       index: -1,
       column: null,
@@ -1008,8 +1089,7 @@ export default {
   margin-left: 1%;
 }
 .policy_info {
-  color: blue;
-  text-decoration: underline;
+  color: black;
 }
 .back2 {
   margin-left: 1%;
