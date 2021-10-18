@@ -211,11 +211,13 @@ export default {
     group: null,
     items: [
       {
+        color: "white",
         text: "LIFE POLICY INFO",
         disabled: false,
         href: "breadcrumbs_dashboard",
       },
       {
+        color: "white",
         text: "ADD EDIT POLICY",
         disabled: false,
         href: "breadcrumbs_link_1",
@@ -228,7 +230,6 @@ export default {
 .breadcrumbs_1 {
   padding: 0% !important;
   margin: 0% !important;
-  color: white !important;
 }
 @media (min-width: 360px) and (max-width: 640px) {
   .subheading {

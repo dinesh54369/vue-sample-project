@@ -46,16 +46,20 @@
         </v-stepper-header>
 
         <v-stepper-items>
-          <v-stepper-content step="1">
+          <v-stepper-content step="1" class="steppercontent_1">
             <v-card class="mb-12" color="white" height="100%">
-              <div class="font-weight-black policy_info">POLICY INFO</div>
-              <div class="d-flex justify-end mb-6">
-                <v-btn class="next2" color="primary">Next</v-btn>
-                <v-btn class="back2" color="secondary">Back </v-btn>
+              <div class="font-weight-black policy_info ps-5">POLICY INFO</div>
+              <div class="d-flex justify-end mb-6 me-2">
+                <v-btn class="next2" @click="e1 = 2" color="primary"
+                  >Next</v-btn
+                >
+                <v-btn class="back2" @click="goBack()" color="secondary"
+                  >Back
+                </v-btn>
                 <v-btn class="save2" color="warning"> Save </v-btn>
               </div>
               <div>
-                <v-expansion-panels>
+                <v-expansion-panels class="ps-2 pe-2">
                   <v-expansion-panel>
                     <v-expansion-panel-header class="font-weight-black">
                       Policy Owner Details
@@ -76,7 +80,7 @@
 
               <v-container> </v-container>
               <div class="e_pannal_2">
-                <v-expansion-panels>
+                <v-expansion-panels class="ps-2 pe-2">
                   <v-expansion-panel>
                     <v-expansion-panel-header class="font-weight-black">
                       Life Insured Details
@@ -94,8 +98,8 @@
               </div>
               <v-container></v-container>
               <div>
-                <v-expansion-panels>
-                  <v-expansion-panel>
+                <v-expansion-panels class="ps-2 pe-2">
+                  <v-expansion-panel class="mb-5">
                     <v-expansion-panel-header class="font-weight-black">
                       Policy Details
                     </v-expansion-panel-header>
@@ -117,7 +121,8 @@
                                 >
                                   <template v-slot:activator="{ on, attrs }">
                                     <v-btn
-                                      small
+                                      rounded
+                                      x-small
                                       color="primary"
                                       dark
                                       v-bind="attrs"
@@ -205,14 +210,29 @@
                                         :items="items"
                                         label="Writing FAR"
                                         dense
+                                        :disabled="disabled"
+                                        @input="check"
                                       ></v-select>
+
+                                      <v-btn
+                                        x-small
+                                        class="mx-2"
+                                        fab
+                                        dark
+                                        color="primary"
+                                        @click="disabled = !disabled"
+                                        v-model="writingfar"
+                                      >
+                                        <v-icon> mdi-pencil </v-icon>
+                                      </v-btn>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
-                                      <v-select
-                                        :items="items"
+                                      <v-text-field
                                         label="Servicing FAR"
                                         dense
-                                      ></v-select>
+                                        v-model="servicingfar"
+                                        disabled
+                                      ></v-text-field>
                                     </v-col>
 
                                     <v-col cols="8" sm="6" md="2">
@@ -243,8 +263,8 @@
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
-                                        label="Writing FAR"
+                                        :items="items_lifeinsured"
+                                        label="Life Insured"
                                         outlined
                                       ></v-select>
                                     </v-col>
@@ -255,10 +275,9 @@
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_inforce"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -267,8 +286,9 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_inforce"
                                             label="Inforce Date"
+                                            aria-placeholder="Inforce Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
                                             v-bind="attrs"
@@ -276,36 +296,18 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_inforce"
+                                          @input="menu_inforce = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                   </v-row>
                                   <v-row>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_commencement"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -314,8 +316,8 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
-                                            label="Inforce Date"
+                                            v-model="date_commencement"
+                                            label="Commencement Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
                                             v-bind="attrs"
@@ -323,38 +325,22 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_commencement"
+                                          @input="menu_commencement = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
+
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_policystatus"
                                         label="Policy Status"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_businessstatus"
                                         label="Business Status"
                                         outlined
                                       ></v-select>
@@ -363,10 +349,9 @@
                                   <v-row>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_application"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -375,7 +360,7 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_application"
                                             label="Application Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
@@ -384,34 +369,16 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_application"
+                                          @input="menu_application = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_submission"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -420,8 +387,8 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
-                                            label="Submission Date"
+                                            v-model="date_submission"
+                                            label="Submisssion Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
                                             v-bind="attrs"
@@ -429,34 +396,16 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_submission"
+                                          @input="menu_submission = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_registration"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -465,7 +414,7 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_registration"
                                             label="Registration Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
@@ -474,40 +423,23 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_registration"
+                                          @input="menu_registration = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                   </v-row>
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_preferredcompanyname"
                                         label="Preferred Company Name"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_insuredbi"
                                         label="Product Name (Insurer BI)"
                                         outlined
                                       ></v-select>
@@ -523,21 +455,21 @@
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_basicproductname"
                                         label="Basic Product Name (Autosync)"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_producttypefa"
                                         label="Product Name (FA)"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_producttypefa"
                                         label="Product Type (FA)"
                                         outlined
                                       ></v-select>
@@ -546,7 +478,7 @@
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_productsubtypefa"
                                         label="Product Sub Type (FA)"
                                         outlined
                                       ></v-select>
@@ -555,15 +487,15 @@
                                       <v-select
                                         :items="items"
                                         label="Issue Age"
+                                        value="29"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_status"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -572,7 +504,7 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_status"
                                             label="Status Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
@@ -581,26 +513,9 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_status"
+                                          @input="menu_status = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                   </v-row>
@@ -608,19 +523,20 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Sum Assured / Benefit"
+                                        value="2000"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Policy Term"
+                                        value="70"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_policy"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -629,7 +545,7 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_policy"
                                             label="Policy End Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
@@ -638,33 +554,16 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_policy"
+                                          @input="menu_policy = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                   </v-row>
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_paymentmethod"
                                         label="Payment Method"
                                         outlined
                                       ></v-select>
@@ -672,14 +571,14 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Premium Term"
+                                        value="70"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
                                       <v-menu
-                                        ref="menu"
-                                        v-model="menu"
+                                        v-model="menu_premium"
                                         :close-on-content-click="false"
-                                        :return-value.sync="date"
+                                        :nudge-right="40"
                                         transition="scale-transition"
                                         offset-y
                                         min-width="auto"
@@ -688,7 +587,7 @@
                                           v-slot:activator="{ on, attrs }"
                                         >
                                           <v-text-field
-                                            v-model="date"
+                                            v-model="date_premium"
                                             label="Premium End Date"
                                             prepend-icon="mdi-calendar"
                                             readonly
@@ -697,40 +596,23 @@
                                           ></v-text-field>
                                         </template>
                                         <v-date-picker
-                                          v-model="date"
-                                          no-title
-                                          scrollable
-                                        >
-                                          <v-spacer></v-spacer>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="menu = false"
-                                          >
-                                            Cancel
-                                          </v-btn>
-                                          <v-btn
-                                            text
-                                            color="primary"
-                                            @click="$refs.menu.save(date)"
-                                          >
-                                            OK
-                                          </v-btn>
-                                        </v-date-picker>
+                                          v-model="date_premium"
+                                          @input="menu_premium = false"
+                                        ></v-date-picker>
                                       </v-menu>
                                     </v-col>
                                   </v-row>
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_frequency"
                                         label="Frequency"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_currency"
                                         label="Currency"
                                         outlined
                                       ></v-select>
@@ -738,6 +620,7 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Exchange Rate"
+                                        value="1"
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
@@ -745,16 +628,21 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Basic Premium(Original)"
+                                        value="100000.00"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Basic Premium (SGD)"
+                                        value="100000.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Loading Premium (Original)"
+                                        value="0.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
@@ -762,16 +650,21 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Loading Premium (SGD)"
+                                        value="0.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Discounted Premium (Original)"
+                                        value="0.00"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Discounted Premium (SGD)"
+                                        value="0.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
@@ -779,16 +672,21 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="GST (SGD)"
+                                        value="6542.06"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Basic Modal Premium"
+                                        value="93457.94"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Basic Total Premium (SGD)"
+                                        value="100000.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
@@ -796,37 +694,43 @@
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Basic Shield Plan Premium"
+                                        value="0.00"
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Total Modal Premium (Basic + All Rider)"
+                                        value="93457.94"
+                                        disabled
+                                        outlined
                                       ></v-text-field>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-text-field
                                         label="Total Premium (Basic + All Rider)(SGD)"
+                                        value="100000.00"
+                                        disabled
                                       ></v-text-field>
                                     </v-col>
                                   </v-row>
                                   <v-row>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_referencenumber"
                                         label="Reference Number"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_upgrade"
                                         label="Upgrade / Downgrade"
                                         outlined
                                       ></v-select>
                                     </v-col>
                                     <v-col class="d-flex" cols="12" sm="4">
                                       <v-select
-                                        :items="items"
+                                        :items="items_rider"
                                         label="Add Rider"
                                         outlined
                                       ></v-select>
@@ -837,7 +741,7 @@
                                       <v-textarea
                                         outlined
                                         name="input-7-4"
-                                        label="Outlined textarea"
+                                        label="Case Note"
                                         value=""
                                       ></v-textarea>
                                     </v-col>
@@ -852,12 +756,10 @@
                 </v-expansion-panels>
               </div>
             </v-card>
-            <div class="d-flex justify-end">
+            <div class="d-flex justify-end me-2">
               <v-btn class="next1" color="primary" @click="e1 = 2">Next</v-btn>
 
-              <v-btn class="back1" color="secondary" @click="el = -1"
-                >Back
-              </v-btn>
+              <v-btn class="back1" color="secondary"> Back </v-btn>
               <v-btn class="save1" color="warning"> Save </v-btn>
             </div>
           </v-stepper-content>
@@ -871,7 +773,7 @@
 
             <v-btn color="primary" @click="e1 = 3">Next</v-btn>
 
-            <v-btn color="secondary" @click="el = -2">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
           <v-stepper-content step="3">
@@ -881,7 +783,7 @@
 
             <v-btn color="primary" @click="e1 = 4">Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
           <v-stepper-content step="4">
@@ -893,7 +795,7 @@
 
             <v-btn color="primary" @click="e1 = 5"> Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
           <v-stepper-content step="5">
@@ -905,7 +807,7 @@
 
             <v-btn color="primary" @click="e1 = 6"> Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
           <v-stepper-content step="6">
@@ -917,7 +819,7 @@
 
             <v-btn color="primary" @click="e1 = 7"> Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
 
@@ -930,7 +832,7 @@
 
             <v-btn color="primary" @click="e1 = 8"> Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
           <v-stepper-content step="8">
@@ -942,7 +844,7 @@
 
             <v-btn color="primary" @click="e1 = 8"> Next </v-btn>
 
-            <v-btn color="secondary">Back</v-btn>
+            <v-btn color="secondary" @click="goBack()">Back</v-btn>
             <v-btn color="warning"> Save </v-btn>
           </v-stepper-content>
         </v-stepper-items>
@@ -962,16 +864,77 @@ export default {
     return {
       dialog: false,
       e1: 1,
-      index: -1,
       column: null,
       row: null,
-      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      date_inforce: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
         .toISOString()
         .substr(0, 10),
       menu: false,
       modal: false,
-      menu2: false,
-      items: ["8000 - Financial Alliance Pte Ltd - Active"],
+      menu_inforce: false,
+      date_commencement: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10),
+      menu_commencement: false,
+      date_application: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10),
+      menu_application: false,
+      date_submission: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10),
+      menu_submission: false,
+      date_registration: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10),
+      menu_registration: false,
+      date_status: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10),
+      menu_status: false,
+      date_policy: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10),
+      menu_policy: false,
+      date_premium: new Date(
+        Date.now() - new Date().getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .substr(0, 10),
+      menu_premium: false,
+      items: ["8000 - Financial Alliance Pte Ltd - Active", "gayt", "vaknjn"],
+      writingfar: "",
+      servicingfar: "",
+
+      disabled: true,
+      items_writing: ["dinesh kumar j"],
+      items_servicing: [""],
+      items_policystatus: ["Registered", "Not Registered"],
+      items_lifeinsured: ["Betty", "Dinesh Kumar J"],
+      items_businessstatus: ["Yes"],
+      items_preferredcompanyname: ["NTUC INCOME"],
+      items_insuredbi: ["--Product Name (Insurer BI) --"],
+      items_insurerpolicy: ["--Product Name (Insurer Policy)--"],
+      items_basicproductname: ["Select an Option"],
+      item_productnamefa: ["Enhanced IncomeShield Preferred"],
+      items_producttypefa: ["H & S - IP Main Plan"],
+      items_productsubtypefa: ["H & S - IP Main Plan"],
+      items_paymentmethod: ["Cash/Casier Order/Money Order"],
+      items_frequency: ["yearly"],
+      items_currency: ["SGD", "INR", "USD", "EURO", "YEN"],
+      items_referencenumber: ["FCA202109300001"],
+      items_upgrade: ["No", "Yes"],
+      items_rider: ["No", "Yes"],
       headers: [
         {
           text: "Dessert (100g serving)",
@@ -1070,13 +1033,18 @@ export default {
     };
   },
   methods: {
-    check: function () {
-      if (this.el >= 8) {
-        this.el = 1;
-      } else {
-        var res = (this.el += 1);
-        this.el = res;
+    goBack() {
+      this.e1--;
+      console.log(this.e1);
+      if (this.e1 == 0) {
+        this.e1 = 1;
       }
+    },
+    check(event) {
+      this.writingfar = event;
+      this.disabled = true;
+      //  var data=event.split('-')[0]
+      this.servicingfar = event;
     },
   },
 };
@@ -1089,12 +1057,15 @@ export default {
   margin-left: 1%;
 }
 .policy_info {
-  color: black;
+  color: rgb(103 58 183);
 }
 .back2 {
   margin-left: 1%;
 }
 .save2 {
   margin-left: 1%;
+}
+.steppercontent_1 {
+  background-color: #f3f3f4;
 }
 </style>
